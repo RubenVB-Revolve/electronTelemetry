@@ -1,0 +1,11 @@
+const lc = lightningChart({
+    license: "0002-n96ucKX1C700BOZwz7IAGHHjEuT4KwDfrkmx7QCyIBztfxcK2B2YdzqRkuyh0bv4JWu/viN/aCm4HYmBbVnGHphV-MEUCIQCoAbM5nVG3lu6EAeoZcsrvewNpdn+DEGKL6UpNeDXEbAIgCV8gVBAZ3XKPAkbuQDarCfg/BnBK4sN+L00cqoYMu5E=",
+    licenseInformation: {
+        appTitle: "LightningChart JS Trial",
+        company: "LightningChart Ltd."
+    },
+})
+const chart = lc.ChartXY()
+
+Installation instructions
+https://lightningchart.com/js-charts/docs/installation
