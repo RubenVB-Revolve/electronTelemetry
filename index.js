@@ -7,8 +7,8 @@ let ws = new WebSocket(`ws://localhost:8080/ws/datastream`);
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1600,
+    height: 1200,
     webPreferences: {
       contextIsolation: false, // Ensures proper IPC communication
       nodeIntegration: true, // Enables Node.js integration in the renderer
@@ -22,8 +22,13 @@ function createWindow() {
     const parsedData = JSON.parse(data);
 
     const pitchData = parsedData.data['vcu/114.InsEstimates1.pitch'];
-    const axData = parsedData.data['vcu/116.ImuMeasurements.ax'];
+    const axData = parsedData.data['vcu/102.INS.ax'];
+    const ayData = parsedData.data['vcu/102.INS.ay'];
     const rollData = parsedData.data['vcu/114.InsEstimates1.roll'];
+    const flTorqueData = parsedData.data['vcu/119.InverterEstimates.motor_torque.fl'];
+    const frTorqueData = parsedData.data['vcu/119.InverterEstimates.motor_torque.fr'];
+    const rlTorqueData = parsedData.data['vcu/119.InverterEstimates.motor_torque.rl'];
+    const rrTorqueData = parsedData.data['vcu/119.InverterEstimates.motor_torque.rr'];
 
     if (pitchData !== undefined) {
       win.webContents.send('pitch-data', {
@@ -37,13 +42,38 @@ function createWindow() {
         yValue: axData,  // Send it as 'yValue'
       });
     } 
+    if (ayData !== undefined) {
+      win.webContents.send('ay-data', {
+        timestamp: parsedData.timestamp,
+        yValue: ayData,  // Send it as 'yValue'
+      });
+    }
+    if (axData !== undefined && ayData !== undefined) {
+      win.webContents.send('gg-data', {
+        timestamp: parsedData.timestamp,
+        xValue: axData,  // Send it as 'xValue'
+        yValue: ayData,  // Send it as 'yValue'
+      });
+    }
     if (rollData !== undefined) {
       win.webContents.send('roll-data', {
         timestamp: parsedData.timestamp,
         yValue: rollData,  // Send it as 'yValue'
       });
     }
+    if(flTorqueData !== undefined && frTorqueData !== undefined && rlTorqueData !== undefined && rrTorqueData !== undefined) {
+      win.webContents.send('torque-data', {
+        timestamp: parsedData.timestamp,
+        fl: flTorqueData,
+        fr: frTorqueData,
+        rl: rlTorqueData,
+        rr: rrTorqueData,
+      });
+    }
 });
+
+  // Open the DevTools.
+  win.webContents.openDevTools();
   
 }
 
