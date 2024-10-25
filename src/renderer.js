@@ -19,7 +19,7 @@ const lc = lightningChart({
 });
 
 const charts = [];
-const timeWindow = 10;  // 10 seconds
+const timeWindow = 1;  // 10 seconds
 
 function addGraph(name, eventChannel) {
   // Create a container div for the chart
@@ -37,7 +37,7 @@ function addGraph(name, eventChannel) {
   const axisX = chart.getDefaultAxisX();
   axisX.setTickStrategy(AxisTickStrategies.Time)
       .setScrollStrategy(AxisScrollStrategies.progressive)
-      .setInterval({ start: 0, end: timeWindow * 100, stopAxisAfter: false });  // Set initial interval for scrolling
+      .setInterval({ start: 0, end: timeWindow * 1000, stopAxisAfter: false });  // Set initial interval for scrolling
 
   const axisY = chart.getDefaultAxisY().setThickness({ min: 80 });
   const series = chart.addLineSeries({ dataPattern: { pattern: 'ProgressiveX' } });
@@ -71,10 +71,6 @@ function addGGDiagram(name, eventChannel) {
     theme: Themes.darkGold
   }).setTitle(name).setPadding({ top: 0, left: 100 });
 
-  const axisX = chart.getDefaultAxisX();
-
-  const axisY = chart.getDefaultAxisY();
-
   const series = chart.addPointLineAreaSeries({ dataPattern: null })
     .setStrokeStyle(emptyLine)
     .setAreaFillStyle(emptyFill)
@@ -104,8 +100,6 @@ function addBarChart(name, eventChannel) {
   }).setTitle(name).setPadding({ top: 0, left: 100 })
     .setSorting(BarChartSorting.Alphabetical);
 
-  // const series = chart.addBarSeries({  });
-
   ipcRenderer.on(eventChannel, (event, args) => {
     const { fr, fl, rl, rr } = args;
 
@@ -133,7 +127,6 @@ function add3dLineChart(name, eventChannel) {
     theme: Themes.darkGold
   }).setTitle(name).setPadding({ top: 0, left: 100 });
 
-  // Create a separate line series for each point along the Z-axis
   const frSeries = chart.addLineSeries();
   const flSeries = chart.addLineSeries();
   const rlSeries = chart.addLineSeries();
@@ -151,20 +144,17 @@ function add3dLineChart(name, eventChannel) {
 
     const relativeTime = (timestamp - initialTimestamp) / 1000;  // Convert milliseconds to seconds
 
-    // Add data points to their respective Z-positions
     frSeries.add({ x: relativeTime, y: fr, z: 0 });
     flSeries.add({ x: relativeTime, y: fl, z: 10 });
     rlSeries.add({ x: relativeTime, y: rl, z: 20 });
     rrSeries.add({ x: relativeTime, y: rr, z: 30 });
 
-    // Dynamically adjust the X-axis interval to keep the chart scrolling
     const axisX = chart.getDefaultAxisX();
     if (relativeTime > timeWindow) {
       axisX.setInterval(relativeTime - timeWindow, relativeTime);
     }
   });
 
-  // Store both the chart and its container for later use
   charts.push({ chart, container, frSeries, flSeries, rlSeries, rrSeries });
   updateChartLayout();
 }
